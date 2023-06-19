@@ -2,18 +2,27 @@
 <html>
   <head>
     <title>A Movie Search Web App</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="movie.css" />
+    <script src="movie.js"></script>
   </head>
   <body>
     <nav class="navbar">
-        
       <a href="#" class="logo">Movie Web App</a>
-      <img src="./image/video-removebg-preview.png" alt="" class="imgNav">
+      <img src="./image/video-removebg-preview.png" alt="" class="imgNav" />
     </nav>
 
     <div class="container">
       <h1>Search for Movies</h1>
+      <div class="sort-container">
+        <label for="sortSelect">Sort By:</label>
+        <select id="sortSelect">
+          <option value="title">Title</option>
+          <option value="rating">Rating</option>
+          <option value="year">Year</option>
+        </select>
+        <button id="sortButton">click</button>
+      </div>
       <div class="search-container">
         <input
           type="text"
@@ -28,7 +37,5 @@
     <div class="page">
       <div id="paginationContainer"></div>
     </div>
-
-    <script src="movie.js"></script>
   </body>
 </html>

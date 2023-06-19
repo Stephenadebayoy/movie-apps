@@ -103,8 +103,18 @@ button {
 
 .movie-card h3 {
   margin-bottom: 10px;
-
 }
+#sortButton {
+  margin: 10px 0px;
+}
+#sortSelect {
+  height: 40px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-color: #fff;
+}
+.rating {
+    font-weight: bold;
+  }
 
 .movie-card p {
   font-size: 14px;

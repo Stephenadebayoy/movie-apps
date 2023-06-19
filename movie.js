@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
   let currentPage = 1;
   let totalPages = 1;
   let currentSearchTerm = "";
+  const API_KEY = "9f2dffcb";
 
   searchButton.addEventListener("click", function () {
     const searchTerm = searchInput.value.trim();
@@ -16,8 +17,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
+  let movies = []; // Declare movies array
+
   function searchMovies(searchTerm) {
-    const apiKey = "9f2dffcb";
+    const apiKey = API_KEY;
     const apiUrl = `https://www.omdbapi.com/?apikey=${apiKey}&s=${encodeURIComponent(
       searchTerm
     )}&page=${currentPage}`;
@@ -25,8 +28,8 @@ document.addEventListener("DOMContentLoaded", function () {
     fetch(apiUrl)
       .then((response) => response.json())
       .then((data) => {
-        console.log("data::", data);
         if (data.Response === "True") {
+          movies = data.Search;
           totalPages = Math.ceil(data.totalResults / 10);
           displayMovies(data.Search);
           displayPagination();
@@ -35,7 +38,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       })
       .catch((error) => {
-        console.log(error);
         displayError("An error occurred. Please try again later.");
       });
   }
@@ -48,6 +50,52 @@ document.addEventListener("DOMContentLoaded", function () {
       resultsContainer.appendChild(movieCard);
     });
   }
+
+  const sortButton = document.getElementById("sortButton");
+  sortButton.addEventListener("click", sortResults);
+  function sortResults() {
+    const sortSelect = document.getElementById("sortSelect");
+    const sortBy = sortSelect.value;
+
+    const fetchRatingsPromises = movies.map((movie) =>
+      getMovieRatings(movie.imdbID)
+    );
+
+    Promise.all(fetchRatingsPromises)
+      .then((ratingDataArray) => {
+        ratingDataArray.forEach((ratingData, index) => {
+          if (ratingData && ratingData.imDb) {
+            const imdbRating = ratingData.imDb.rating;
+            movies[index].imdbRating = imdbRating;
+          }
+        });
+
+        if (sortBy === "title") {
+          movies.sort((a, b) => a.Title.localeCompare(b.Title));
+        } else if (sortBy === "rating") {
+          movies.sort((a, b) => {
+            if (a.imdbRating && b.imdbRating) {
+              return b.imdbRating - a.imdbRating;
+            } else if (a.imdbRating) {
+              return -1;
+            } else if (b.imdbRating) {
+              return 1;
+            } else {
+              return 0;
+            }
+          });
+        } else if (sortBy === "year") {
+          movies.sort((a, b) => b.Year - a.Year);
+        }
+
+        displayMovies(movies);
+      })
+      .catch((error) => {
+        console.log(error);
+        displayMovies(movies);
+      });
+  }
+
   function createMovieCard(movie) {
     const movieCard = document.createElement("div");
     movieCard.classList.add("movie-card");
@@ -59,12 +107,28 @@ document.addEventListener("DOMContentLoaded", function () {
     movieCard.appendChild(img);
 
     const title = document.createElement("h3");
-    title.textContent = movie.Title;
+    const sortBy = sortSelect.value;
+
+    if (sortBy === "title") {
+      title.textContent = movie.Title;
+    } else if (sortBy === "rating") {
+      title.textContent = `${movie.Title} (IMDb: ${movie.imdbRating})`;
+    } else if (sortBy === "year") {
+      title.textContent = `${movie.Title} (${movie.Year})`;
+    }
+
     movieCard.appendChild(title);
 
     const year = document.createElement("p");
     year.textContent = movie.Year;
     movieCard.appendChild(year);
+
+    // Add rating element
+    const rating = document.createElement("p");
+    if (movie.imdbRating) {
+      rating.innerHTML = `<strong>Rating:</strong> ${movie.imdbRating}`;
+      movieCard.appendChild(rating);
+    }
 
     const detailsButton = document.createElement("button");
     detailsButton.textContent = "View Details";
@@ -79,7 +143,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function getMovieDetails(imdbID) {
-    const apiKey = "9f2dffcb";
+    const apiKey = API_KEY;
     const apiUrl = `https://www.omdbapi.com/?apikey=${apiKey}&i=${encodeURIComponent(
       imdbID
     )}`;
@@ -117,22 +181,23 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function getMovieRatings(imdbID, movieData) {
-    const imdbApiKey = "9f2dffcb";
+    const imdbApiKey = API_KEY;
     const imdbApiUrl = `https://api.imdb.com/title/${imdbID}/ratings?apiKey=${imdbApiKey}`;
 
-    fetch(imdbApiUrl)
+    return fetch(imdbApiUrl)
       .then((response) => response.json())
       .then((data) => {
         if (data.errorMessage) {
-          displayMovieDetails(movieData);
+          return null;
         } else {
           const imdbRating = data.rating.toFixed(1);
           movieData.imdbRating = imdbRating;
-          displayMovieDetails(movieData);
+          return movieData;
         }
       })
       .catch((error) => {
         displayMovieDetails(movieData);
+        return movieData;
       });
   }
 
@@ -140,29 +205,13 @@ document.addEventListener("DOMContentLoaded", function () {
     const detailsContainer = document.createElement("div");
     detailsContainer.classList.add("movie-details");
 
-    const title = document.createElement("h3");
-    title.textContent = movie.Title;
-    detailsContainer.appendChild(title);
+    const Listkeys = ["Released", "Genre", "Director", "Actors", "Plot"];
 
-    const released = document.createElement("p");
-    released.innerHTML = `<strong>Released:</strong> ${movie.Released}`;
-    detailsContainer.appendChild(released);
-
-    const genre = document.createElement("p");
-    genre.innerHTML = `<strong>Genre:</strong> ${movie.Genre}`;
-    detailsContainer.appendChild(genre);
-
-    const director = document.createElement("p");
-    director.innerHTML = `<strong>Director:</strong> ${movie.Director}`;
-    detailsContainer.appendChild(director);
-
-    const actors = document.createElement("p");
-    actors.innerHTML = `<strong>Actors:</strong> ${movie.Actors}`;
-    detailsContainer.appendChild(actors);
-
-    const plot = document.createElement("p");
-    plot.innerHTML = `<strong>Plot:</strong> ${movie.Plot}`;
-    detailsContainer.appendChild(plot);
+    Listkeys.forEach((key) => {
+      const element = document.createElement("p");
+      element.innerHTML = `<strong>${key}:</strong> ${movie[key]}`;
+      detailsContainer.appendChild(element);
+    });
 
     const imdbRating = document.createElement("p");
     if (movie.imdbRating) {
@@ -181,6 +230,7 @@ document.addEventListener("DOMContentLoaded", function () {
     targetMovieCard.appendChild(detailsContainer);
   }
 
+  // display paginations
   function displayPagination() {
     paginationContainer.innerHTML = "";
 
