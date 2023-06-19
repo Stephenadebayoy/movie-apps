@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  let movies = []; // Declare movies array
+  let movies = [];
 
   function searchMovies(searchTerm) {
     const apiKey = API_KEY;
@@ -151,6 +151,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
   }
 
+  //  movie rating
   function getMovieRatings(imdbID, movieData) {
     const imdbApiKey = API_KEY;
     const imdbApiUrl = `https://api.imdb.com/title/${imdbID}/ratings?apiKey=${imdbApiKey}`;
@@ -172,6 +173,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
   }
 
+  // display movie details
   function displayMovieDetails(movie, movieCard) {
     const detailsContainer = document.createElement("div");
     detailsContainer.classList.add("movie-details");
