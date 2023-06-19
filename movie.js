@@ -28,6 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
     fetch(apiUrl)
       .then((response) => response.json())
       .then((data) => {
+        console.log("data::", data);
         if (data.Response === "True") {
           movies = data.Search;
           totalPages = Math.ceil(data.totalResults / 10);
@@ -50,50 +51,20 @@ document.addEventListener("DOMContentLoaded", function () {
       resultsContainer.appendChild(movieCard);
     });
   }
-
   const sortButton = document.getElementById("sortButton");
   sortButton.addEventListener("click", sortResults);
+
   function sortResults() {
     const sortSelect = document.getElementById("sortSelect");
     const sortBy = sortSelect.value;
 
-    const fetchRatingsPromises = movies.map((movie) =>
-      getMovieRatings(movie.imdbID)
-    );
+    if (sortBy === "title") {
+      movies.sort((a, b) => a.Title.localeCompare(b.Title));
+    } else if (sortBy === "year") {
+      movies.sort((a, b) => b.Year - a.Year);
+    }
 
-    Promise.all(fetchRatingsPromises)
-      .then((ratingDataArray) => {
-        ratingDataArray.forEach((ratingData, index) => {
-          if (ratingData && ratingData.imDb) {
-            const imdbRating = ratingData.imDb.rating;
-            movies[index].imdbRating = imdbRating;
-          }
-        });
-
-        if (sortBy === "title") {
-          movies.sort((a, b) => a.Title.localeCompare(b.Title));
-        } else if (sortBy === "rating") {
-          movies.sort((a, b) => {
-            if (a.imdbRating && b.imdbRating) {
-              return b.imdbRating - a.imdbRating;
-            } else if (a.imdbRating) {
-              return -1;
-            } else if (b.imdbRating) {
-              return 1;
-            } else {
-              return 0;
-            }
-          });
-        } else if (sortBy === "year") {
-          movies.sort((a, b) => b.Year - a.Year);
-        }
-
-        displayMovies(movies);
-      })
-      .catch((error) => {
-        console.log(error);
-        displayMovies(movies);
-      });
+    displayMovies(movies);
   }
 
   function createMovieCard(movie) {
