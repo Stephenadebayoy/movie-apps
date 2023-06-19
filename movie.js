@@ -25,6 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
     fetch(apiUrl)
       .then((response) => response.json())
       .then((data) => {
+        console.log("data::", data);
         if (data.Response === "True") {
           totalPages = Math.ceil(data.totalResults / 10);
           displayMovies(data.Search);
@@ -110,7 +111,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       })
       .catch((error) => {
-        console.log("error::",error)
+        console.log("error::", error);
         displayError("An error occurred. Please try again later.");
       });
   }
