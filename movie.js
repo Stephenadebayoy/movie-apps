@@ -34,56 +34,59 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       })
       .catch((error) => {
+        console.log(error);
         displayError("An error occurred. Please try again later.");
       });
   }
 
   function displayMovies(movies) {
-    resultsContainer.innerHTML = '';
-  
-    movies.forEach(movie => {
+    resultsContainer.innerHTML = "";
+
+    movies.forEach((movie) => {
       const movieCard = createMovieCard(movie);
       resultsContainer.appendChild(movieCard);
     });
   }
   function createMovieCard(movie) {
-    const movieCard = document.createElement('div');
-    movieCard.classList.add('movie-card');
-    movieCard.setAttribute('id', movie.imdbID);
-  
-    const img = document.createElement('img');
+    const movieCard = document.createElement("div");
+    movieCard.classList.add("movie-card");
+    movieCard.setAttribute("id", movie.imdbID);
+
+    const img = document.createElement("img");
     img.src = movie.Poster;
     img.alt = movie.Title;
     movieCard.appendChild(img);
-  
-    const title = document.createElement('h3');
+
+    const title = document.createElement("h3");
     title.textContent = movie.Title;
     movieCard.appendChild(title);
-  
-    const year = document.createElement('p');
+
+    const year = document.createElement("p");
     year.textContent = movie.Year;
     movieCard.appendChild(year);
-  
-    const detailsButton = document.createElement('button');
-    detailsButton.textContent = 'View Details';
-    detailsButton.addEventListener('click', function() {
-      if (!movieCard.querySelector('.movie-details')) {
+
+    const detailsButton = document.createElement("button");
+    detailsButton.textContent = "View Details";
+    detailsButton.addEventListener("click", function () {
+      if (!movieCard.querySelector(".movie-details")) {
         getMovieDetails(movie.imdbID, movieCard);
       }
     });
     movieCard.appendChild(detailsButton);
-  
+
     return movieCard;
   }
 
   function getMovieDetails(imdbID) {
-    const apiKey = '9f2dffcb';
-    const apiUrl = `http://www.omdbapi.com/?apikey=${apiKey}&i=${encodeURIComponent(imdbID)}`;
-  
+    const apiKey = "9f2dffcb";
+    const apiUrl = `http://www.omdbapi.com/?apikey=${apiKey}&i=${encodeURIComponent(
+      imdbID
+    )}`;
+
     fetch(apiUrl)
-      .then(response => response.json())
-      .then(data => {
-        if (data.Response === 'True') {
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.Response === "True") {
           const details = `
             <h3>${data.Title}</h3>
             <img src="${data.Poster}" alt="${data.Title}" />
@@ -92,24 +95,27 @@ document.addEventListener("DOMContentLoaded", function () {
             <p><strong>Director:</strong> ${data.Director}</p>
             <p><strong>Actors:</strong> ${data.Actors}</p>
             <p><strong>Plot:</strong> ${data.Plot}</p>
-            ${data.imdbRating ? `<p><strong>IMDb Rating:</strong> ${data.imdbRating}</p>` : ''}
+            ${
+              data.imdbRating
+                ? `<p><strong>IMDb Rating:</strong> ${data.imdbRating}</p>`
+                : ""
+            }
           `;
-          const newWindow = window.open('', '_blank');
+          const newWindow = window.open("", "_blank");
           newWindow.document.write(details);
           newWindow.document.close();
           getMovieRatings(imdbID, data);
         } else {
-          displayError('Failed to get movie details.');
+          displayError("Failed to get movie details.");
         }
       })
-      .catch(error => {
-        displayError('An error occurred. Please try again later.');
+      .catch((error) => {
+        displayError("An error occurred. Please try again later.");
       });
   }
-  
 
   function getMovieRatings(imdbID, movieData) {
-    const imdbApiKey = "your-imdb-api-key"; 
+    const imdbApiKey = "your-imdb-api-key";
     const imdbApiUrl = `https://api.imdb.com/title/${imdbID}/ratings?apiKey=${imdbApiKey}`;
 
     fetch(imdbApiUrl)
@@ -129,51 +135,50 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function displayMovieDetails(movie, movieCard) {
-    const detailsContainer = document.createElement('div');
-    detailsContainer.classList.add('movie-details');
-  
-    const title = document.createElement('h3');
+    const detailsContainer = document.createElement("div");
+    detailsContainer.classList.add("movie-details");
+
+    const title = document.createElement("h3");
     title.textContent = movie.Title;
     detailsContainer.appendChild(title);
-  
-    const released = document.createElement('p');
+
+    const released = document.createElement("p");
     released.innerHTML = `<strong>Released:</strong> ${movie.Released}`;
     detailsContainer.appendChild(released);
-  
-    const genre = document.createElement('p');
+
+    const genre = document.createElement("p");
     genre.innerHTML = `<strong>Genre:</strong> ${movie.Genre}`;
     detailsContainer.appendChild(genre);
-  
-    const director = document.createElement('p');
+
+    const director = document.createElement("p");
     director.innerHTML = `<strong>Director:</strong> ${movie.Director}`;
     detailsContainer.appendChild(director);
-  
-    const actors = document.createElement('p');
+
+    const actors = document.createElement("p");
     actors.innerHTML = `<strong>Actors:</strong> ${movie.Actors}`;
     detailsContainer.appendChild(actors);
-  
-    const plot = document.createElement('p');
+
+    const plot = document.createElement("p");
     plot.innerHTML = `<strong>Plot:</strong> ${movie.Plot}`;
     detailsContainer.appendChild(plot);
-  
-    const imdbRating = document.createElement('p');
+
+    const imdbRating = document.createElement("p");
     if (movie.imdbRating) {
       imdbRating.innerHTML = `<strong>IMDb Rating:</strong> ${movie.imdbRating}`;
       detailsContainer.appendChild(imdbRating);
     }
-  
-    const closeButton = document.createElement('button');
-    closeButton.textContent = 'Close';
-    closeButton.addEventListener('click', function() {
+
+    const closeButton = document.createElement("button");
+    closeButton.textContent = "Close";
+    closeButton.addEventListener("click", function () {
       detailsContainer.remove();
     });
     detailsContainer.appendChild(closeButton);
-  
 
-    const targetMovieCard = movieCard || movie.closest('.movie-card');
+    const targetMovieCard = movieCard || movie.closest(".movie-card");
     targetMovieCard.appendChild(detailsContainer);
   }
-  
+
   function displayPagination() {
     paginationContainer.innerHTML = "";
 
