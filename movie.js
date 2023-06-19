@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function searchMovies(searchTerm) {
     const apiKey = "9f2dffcb";
-    const apiUrl = `https://www.omdbapi.com/?apikey=${apiKey}&s=${encodeURIComponent(
+    const apiUrl = `http://www.omdbapi.com/?apikey=${apiKey}&s=${encodeURIComponent(
       searchTerm
     )}&page=${currentPage}`;
 
