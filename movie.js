@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function getMovieDetails(imdbID) {
     const apiKey = "9f2dffcb";
-    const apiUrl = `http://www.omdbapi.com/?apikey=${apiKey}&i=${encodeURIComponent(
+    const apiUrl = `https://www.omdbapi.com/?apikey=${apiKey}&i=${encodeURIComponent(
       imdbID
     )}`;
 
