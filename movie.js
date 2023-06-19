@@ -110,6 +110,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       })
       .catch((error) => {
+        console.log("error::",error)
         displayError("An error occurred. Please try again later.");
       });
   }
