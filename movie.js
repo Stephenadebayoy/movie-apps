@@ -97,6 +97,7 @@ document.addEventListener("DOMContentLoaded", function () {
           const newWindow = window.open('', '_blank');
           newWindow.document.write(details);
           newWindow.document.close();
+          getMovieRatings(imdbID, data);
         } else {
           displayError('Failed to get movie details.');
         }
