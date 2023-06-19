@@ -115,7 +115,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function getMovieRatings(imdbID, movieData) {
-    const imdbApiKey = "your-imdb-api-key";
+    const imdbApiKey = "9f2dffcb";
     const imdbApiUrl = `https://api.imdb.com/title/${imdbID}/ratings?apiKey=${imdbApiKey}`;
 
     fetch(imdbApiUrl)
